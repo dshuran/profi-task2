@@ -1,3 +1,5 @@
+const config = require('./../config.js')
+
 var express = require("express");
 var app = express();
 app.use(express.json());
@@ -5,13 +7,11 @@ app.use(express.json());
 const JSONdb = require('simple-json-db');
 const db = new JSONdb('src/database.json');
 
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
+app.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`);
 });
 
 app.post("/notes", ((req, res) => {
-    console.log(req.body);
-
     const currentId = getNewId();
 
     let note =  {
@@ -31,8 +31,10 @@ app.get("/notes", (req, res) => {
     let lastId = db.get('lastId');
     while(id <= lastId) {
         let note = db.get(`notes/${id}`);
-        console.log(note);
         if (note) {
+            if (!note.title) {
+                note.title = note.content.substr(0, config.nClip);
+            }
             notes.push(note)
         }
         id++;
@@ -44,6 +46,9 @@ app.get("/notes", (req, res) => {
 app.get("/notes/:id", ((req, res) => {
     let note = db.get(`notes/${req.params.id}`);
     if (note) {
+        if (!note.title) {
+            note.title = note.content.substr(0, config.nClip);
+        }
         res.json(note);
     } else {
         res.json(400);
