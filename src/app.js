@@ -28,13 +28,12 @@ app.post("/notes", ((req, res) => {
 app.get("/notes", (req, res) => {
     let notes = [];
     let id = 1;
-    while(true) {
+    let lastId = db.get('lastId');
+    while(id <= lastId) {
         let note = db.get(`notes/${id}`);
         console.log(note);
         if (note) {
             notes.push(note)
-        } else {
-            break;
         }
         id++;
     }
