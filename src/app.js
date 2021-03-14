@@ -57,6 +57,10 @@ app.get("/notes/:id", ((req, res) => {
 
 app.put("/notes/:id", (req, res) => {
     let note = db.get(`notes/${req.params.id}`);
+    if (!note) {
+        res.sendStatus(400);
+        return;
+    }
     if (req.body.title) {
         note.title = req.body.title;
     }
@@ -69,6 +73,12 @@ app.put("/notes/:id", (req, res) => {
 })
 
 app.delete("/notes/:id", (req, res) => {
+    let note = db.get(`notes/${req.params.id}`);
+    if (!note) {
+        res.sendStatus(400);
+        return;
+    }
+
     db.delete(`notes/${req.params.id}`);
 
     res.sendStatus(200);
